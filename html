@@ -1,0 +1,288 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Ticket Booking</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f4f4f4;
+            color: #333;
+        }
+
+        header {
+            background: #1e1e2f;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            color: #ff4757;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 800px;
+            margin: 30px auto;
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #ccc;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+
+        select, input {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .screen {
+            background: #ddd;
+            padding: 10px;
+            text-align: center;
+            margin: 25px 0;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .seats {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .seat {
+            padding: 12px 5px;
+            background: #ddd;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .seat.selected {
+            background: #2ed573;
+            color: white;
+        }
+
+        .seat.booked {
+            background: #ff4757;
+            color: white;
+            cursor: not-allowed;
+        }
+
+        .price {
+            text-align: center;
+            margin: 25px 0;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .book-btn {
+            width: 100%;
+            padding: 15px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .book-btn:hover {
+            background: #e84118;
+        }
+
+        #confirmation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f8e8;
+            border-radius: 5px;
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>🎬 MovieBook</h1>
+    <p>Book Your Movie Tickets Online</p>
+</header>
+
+<div class="container">
+
+    <h2>Movie Ticket Booking</h2>
+
+    <label for="city">Select City</label>
+    <select id="city">
+        <option value="Hyderabad">Hyderabad</option>
+        <option value="Bengaluru">Bengaluru</option>
+        <option value="Chennai">Chennai</option>
+        <option value="Mumbai">Mumbai</option>
+    </select>
+
+    <label for="movie">Select Movie</label>
+    <select id="movie">
+        <option value="180">Avengers: Endgame - ₹180</option>
+        <option value="150">RRR - ₹150</option>
+        <option value="200">Pushpa 2 - ₹200</option>
+        <option value="120">Inception - ₹120</option>
+    </select>
+
+    <label for="date">Select Date</label>
+    <input type="date" id="date">
+
+    <label for="time">Select Show Time</label>
+    <select id="time">
+        <option>10:00 AM</option>
+        <option>1:00 PM</option>
+        <option>4:00 PM</option>
+        <option>7:00 PM</option>
+        <option>10:00 PM</option>
+    </select>
+
+    <div class="screen">
+        SCREEN
+    </div>
+
+    <h3>Select Your Seats</h3>
+
+    <div class="seats" id="seats"></div>
+
+    <div class="price">
+        Total Amount: ₹<span id="total">0</span>
+    </div>
+
+    <button class="book-btn" onclick="bookTickets()">
+        Book Tickets
+    </button>
+
+    <div id="confirmation"></div>
+
+</div>
+
+<script>
+
+    const seatsContainer = document.getElementById("seats");
+    const totalDisplay = document.getElementById("total");
+    const movieSelect = document.getElementById("movie");
+
+    let selectedSeats = [];
+
+    // Create 30 seats
+    for (let i = 1; i <= 30; i++) {
+
+        const seat = document.createElement("button");
+
+        seat.classList.add("seat");
+        seat.textContent = "S" + i;
+        seat.type = "button";
+
+        // Demo booked seats
+        if ([3, 8, 15, 22].includes(i)) {
+            seat.classList.add("booked");
+            seat.disabled = true;
+        }
+
+        seat.addEventListener("click", function () {
+
+            const seatNumber = "S" + i;
+
+            if (selectedSeats.includes(seatNumber)) {
+
+                selectedSeats = selectedSeats.filter(
+                    s => s !== seatNumber
+                );
+
+                seat.classList.remove("selected");
+
+            } else {
+
+                selectedSeats.push(seatNumber);
+                seat.classList.add("selected");
+
+            }
+
+            updateTotal();
+
+        });
+
+        seatsContainer.appendChild(seat);
+
+    }
+
+    function updateTotal() {
+
+        const ticketPrice = Number(movieSelect.value);
+
+        const total = selectedSeats.length * ticketPrice;
+
+        totalDisplay.textContent = total;
+
+    }
+
+    movieSelect.addEventListener("change", updateTotal);
+
+    function bookTickets() {
+
+        const city = document.getElementById("city").value;
+        const movie = movieSelect.options[movieSelect.selectedIndex].text;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+
+        const confirmation =
+            document.getElementById("confirmation");
+
+        if (!date) {
+            alert("Please select a date.");
+            return;
+        }
+
+        if (selectedSeats.length === 0) {
+            alert("Please select at least one seat.");
+            return;
+        }
+
+        confirmation.style.display = "block";
+
+        confirmation.innerHTML = `
+            <h3>🎉 Booking Confirmed!</h3>
+            <p><strong>City:</strong> ${city}</p>
+            <p><strong>Movie:</strong> ${movie}</p>
+            <p><strong>Date:</strong> ${date}</p>
+            <p><strong>Time:</strong> ${time}</p>
+            <p><strong>Seats:</strong> ${selectedSeats.join(", ")}</p>
+            <p><strong>Total:</strong> ₹${totalDisplay.textContent}</p>
+            <p>Thank you for booking with MovieBook!</p>
+        `;
+
+    }
+
+</script>
+
+</body>
+</html>
